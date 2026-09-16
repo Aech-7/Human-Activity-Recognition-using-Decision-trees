@@ -1,115 +1,206 @@
-# Assignment 1
+# Human Activity Recognition using Decision Trees
 
-## Total 14 marks 
+**End-to-end machine learning pipeline for classifying human activities from smartphone accelerometer data.**
 
-## Decision Tree Implementation [6 marks]
+[![Python](https://img.shields.io/badge/Python-3.x-blue)]()
+[![Scikit-learn](https://img.shields.io/badge/Scikit--learn-ML-orange)]()
+[![TSFEL](https://img.shields.io/badge/TSFEL-Feature%20Engineering-green)]()
 
-1. Complete the decision tree implementation in tree/base.py. The code should be written in Python and not use existing libraries other than the ones shared in class or already imported in the code. Your decision tree should work for four cases: i) discrete features, discrete output; ii) discrete features, real output; iii) real features, discrete output; real features, real output. <u>Your model should accept real inputs only (for discrete inputs, you may convert the attributes into one-hot encoded vectors)</u>. Your decision tree should be able to use InformationGain using Entropy or GiniIndex as the criteria for splitting for discrete output. Your decision tree should be able to use InformationGain using MSE as the criteria for splitting for real output. Your code should also be able to plot/display the decision tree.  **[2.5 marks]**
+## Project Overview
 
-    > You should be editing the following files.
-  
-    - `metrics.py`: Complete the performance metrics functions in this file. 
+This project develops a **Human Activity Recognition (HAR)** system using smartphone accelerometer data to classify six activities:
 
-    - `usage.py`: Run this file to check your solutions.
+**Walking · Walking Upstairs · Walking Downstairs · Sitting · Standing · Laying**
 
-    - tree (Directory): Module for decision tree.
-      - `base.py` : Complete Decision Tree Class.
-      - `utils.py`: Complete all utility functions.
-      - `__init__.py`: **Do not edit this**
+The project focuses on understanding how **feature representation affects model performance**, comparing raw sensor signals, TSFEL-extracted features, and features provided with the UCI-HAR dataset.
 
-    > You should run _usage.py_ to check your solutions. 
+The complete pipeline includes:
 
-1. 
-    Generate your dataset using the following lines of code
+```text
+Sensor Data
+    ↓
+Preprocessing
+    ↓
+Feature Engineering
+    ↓
+PCA Visualization
+    ↓
+Decision Tree Classification
+    ↓
+Model Evaluation
+    ↓
+Error Analysis
+    ↓
+Real-World Validation
+```
 
-    ```python
-    from sklearn.datasets import make_classification
-    X, y = make_classification(
-    n_features=2, n_redundant=0, n_informative=2, random_state=1, n_clusters_per_class=2, class_sep=0.5)
+---
 
-    # For plotting
-    import matplotlib.pyplot as plt
-    plt.scatter(X[:, 0], X[:, 1], c=y)
-    ```
+## Technical Highlights
 
-    a) Show the usage of *your decision tree* on the above dataset. The first 70% of the data should be used for training purposes and the remaining 30% for test purposes. Show the accuracy, per-class precision and recall of the decision tree you implemented on the test dataset. **[0.5 mark]**
+* Exploratory analysis of multivariate accelerometer time-series data
+* Feature engineering using **TSFEL**
+* Dimensionality reduction using **PCA**
+* Decision Tree classification using **Scikit-learn**
+* Model comparison across multiple feature representations
+* Hyperparameter analysis through varying tree depth
+* Accuracy, precision, recall and confusion-matrix based evaluation
+* Error analysis of misclassified activities
+* Evaluation on **self-collected smartphone sensor data**
 
-    b) Use 5 fold cross-validation on the dataset. Using nested cross-validation find the optimum depth of the tree. **[1 mark]**
-    
-    > You should be editing `classification-exp.py` for the code containing the above experiments.
-
-2. 
-    a) Show the usage of your decision tree for the [automotive efficiency](https://archive.ics.uci.edu/ml/datasets/auto+mpg) problem. **[0.5 marks]**
-    
-    b) Compare the performance of your model with the decision tree module from scikit learn. **[0.5 marks]**
-    
-   > You should be editing `auto-efficiency.py` for the code containing the above experiments.
-    
-3. Create some fake data to do some experiments on the runtime complexity of your decision tree algorithm. Create a dataset with N samples and M binary features. Vary M and N to plot the time taken for: 1) learning the tree, 2) predicting for test data. How do these results compare with theoretical time complexity for decision tree creation and prediction. You should do the comparison for all the four cases of decision trees. **[1 marks]**	
-
-    >You should be editing `experiments.py` for the code containing the above experiments.
-
-
-You must answer the subjectve questions (visualization,timing analysis, displaying plots) by creating `Asst#<task-name>_<Q#>.md`
-
-
-# Human Activity Recognition (HAR)
-Human Activity Recognition (HAR) refers to the capability of machines to identify various activities performed by the users. The knowledge acquired from these systems/algorithms is integrated into many applications where the associated device uses it to identify actions or gestures and performs predefined tasks in response.
+---
 
 ## Dataset
-We are interested in classifying human activities based on accelerometer data. we will be using a publically available dataset called [UCI-HAR](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8567275). The dataset is available to download [here](https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones). Just for your reference a youtube video of the authors collecting participant's accelerometer data is also available [here](http://www.youtube.com/watch?v=XOEN9W05_4A). 
 
-## Task 1 : Exploratory Data Analysis (EDA) [3 marks]
+The primary dataset is the **UCI Human Activity Recognition Using Smartphones Dataset**.
 
-### Preprocessing
-We will use the raw accelerometer data within the inertial_signals folder. The provided script, `CombineScript.py`, organizes and sorts accelerometer data, establishing separate classes for each category and compiling participant data into these classes. `MakeDataset.py` script is used to read through all the participant data and create a single dataset. The dataset is then split into train,test and validation set. We focus on the first 10 seconds of activity, translating to the initial 500 data samples due to a sampling rate of 50Hz.
+The dataset contains smartphone sensor measurements collected from participants performing six activities. Accelerometer signals are sampled at **50 Hz**.
 
-* **Step-1>** Place the `CombineScript.py` and `MakeDataset.py` in the same folder that contains the UCI dataset. Ensure you have moved into the folder before running the scripts. If you are runing the scripts from a different folder, you will have to play around with the paths in the scripts to make it work.
-* **Step-2>** Run `CombineScript.py` and provide the paths to test and train folders in UCI dataset. This will create a folder called `Combined` which will contain all the data from all the participants. This is how most of the datasets are organized. You may encounter similar dataset structures in the future.
-* **Step-3>** Run `MakeDataset.py` and provide the path to `Combined` folder. This will create a Dataset which will contain the train, test and validation set. You can use this dataset to train your models.
+| Activity           | Type    |
+| ------------------ | ------- |
+| Walking            | Dynamic |
+| Walking Upstairs   | Dynamic |
+| Walking Downstairs | Dynamic |
+| Sitting            | Static  |
+| Standing           | Static  |
+| Laying             | Static  |
 
+---
 
-### Questions
+# 1. Exploratory Data Analysis
 
-1. Plot the waveform for one sample data from each activity class. Are you able to see any difference/similarities between the activities? You can plot a subplot having 6 columns to show differences/similarities between the activities. Do you think the model will be able to classify the activities based on the data? **[0.5 marks]**
-2. Do you think we need a machine learning model to differentiate between static activities (laying, sitting, standing) and dynamic activities(walking, walking_downstairs, walking_upstairs)? Look at the linear acceleration $(acc_x^2+acc_y^2+acc_z^2)$ for each activity and justify your answer. **[0.5 marks]**
-3. Visualize the data using PCA. **[1 marks]**
-    * Use PCA (Principal Component Analysis) on Total Acceleration $(acc_x^2+acc_y^2+acc_z^2)$ to compress the acceleration timeseries into two features and plot a scatter plot to visualize different class of activities. 
-    *  Next, use [TSFEL](https://tsfel.readthedocs.io/en/latest/) ([a featurizer library](https://github.com/fraunhoferportugal/tsfel)) to create features (your choice which ones you feel are useful) and then perform PCA to obtain two features. Plot a scatter plot to visualize different class of activities. 
-    *  Now use the features provided by the dataset and perform PCA to obtain two features. Plot a scatter plot to visualize different class of activities.
-    *  Compare the results of PCA on Total Acceleration, TSFEL and the dataset features. Which method do you think is better for visualizing the data? 
-4. Calculate the correlation matrix of the features obtained by TSFEL and provided in the dataset. Identify the features that are highly correlated with each other. Are there any redundant features? **[1 marks]**
+The first stage investigates the structure and characteristics of the accelerometer signals.
 
+### Activity Waveforms
 
-## Task 2 : Decision Trees for Human Activity Recognition [3 marks]
+Representative signals from all six activities are visualized to examine differences in their temporal patterns.
 
-### Questions
+![Activity Waveforms](results/eda/activity_waveforms.png)
 
-1. Use Sklearn Library to train Decision Tress. **[1.5 marks]**
-    * Train a decision tree model using the raw accelerometer data. Report the accuracy, precision, recall and confusion matrix of the model. 
-    * Train a decision tree model using the features obtained by TSFEL. Report the accuracy, precision, recall and confusion matrix of the model. 
-    * Train a decision tree model using the features provided in the dataset. Report the accuracy, precision, recall and confusion matrix of the model. 
-    * Compare the results of the three models. Which model do you think is better? 
-2. Train Decision Tree with varying depths (2-8) using all above 3 methods. Plot the accuracy of the model on test data vs the depth of the tree. **[1 marks]**
-3. Are there any participants/ activitivies where the Model performace is bad? If Yes, Why? **[0.5 mark]**
+### Static vs Dynamic Activities
 
-## Task 3 : Data Collection in the Wild [2 marks]
+Acceleration magnitude is analyzed using:
 
-## Task Description
-For this exercise marks will not depend on what numbers you get but on the process you followed Utilize apps like `Physics Toolbox Suite` from your smartphone to collect your data in .csv/.txt format. Ensure at least 15 seconds of data is collected, trimming edges to obtain 10 seconds of relevant data. Also record a video of yourself while recording data. This video will be required in some future assignments. Collect 3-5 samples per activity class.
+```text
+accx² + accy² + accz²
+```
 
-### Things to take care of:
-* Ensure the phone is placed in the same position for all the activities.
-* Ensure the phone is in the same alignment during the activity as changing the alignment will change the data collected and will affect the model's performance.
-* Ensure to have atleast 10s of data per file for training. As the data is collected at 50Hz, you will have 500 data samples.
+to investigate whether static and dynamic activities exhibit distinguishable sensor patterns.
 
-### Questions
-1. Use the Decision Tree model trained on the UCI-HAR dataset to predict the activities that you performed. Report the accuracy, precision, recall and confusion matrix of the model. You have three version of UCI dataset you can use a)Raw data from accelerometer, b)TSFEL featurised data, c)Features provided by author. Choose which version to use, ensuring that your test data is similar to your training data. How did the model perform? **[1 marks]**
-2. Use the data you collected to predict the activities that you performed. Decide whether to apply preprocessing and featurization, and if so, choose the appropriate methods. How did the model perform? **[1 marks]**
+![Acceleration Magnitude](results/eda/acceleration_magnitude.png)
 
+### PCA Visualization
 
+PCA is used to project three feature representations into two dimensions:
 
-# **Genral Instructions :**
-1. Show your results in a Jupyter Notebook or an MD file. If you opt for using an MD file, you should also include the code.
-2. You can use the scikit-learn implementation of Decision Tree for the Human Activity Recognition.
+* Total acceleration
+* TSFEL features
+* Dataset-provided features
 
+![PCA Comparison](results/pca/pca_comparison.png)
+
+This provides a visual comparison of class separability before classification.
+
+---
+
+# 2. Decision Tree Classification
+
+Decision Trees are trained using three different representations of the sensor data:
+
+| Model   | Input Representation     |
+| ------- | ------------------------ |
+| Model 1 | Raw accelerometer data   |
+| Model 2 | TSFEL features           |
+| Model 3 | UCI-HAR dataset features |
+
+### Model Performance
+
+| Feature Representation |   Accuracy | Precision | Recall |
+| ---------------------- | ---------: | --------: | -----: |
+| Raw Accelerometer      | **XX.XX%** |    XX.XX% | XX.XX% |
+| TSFEL Features         | **XX.XX%** |    XX.XX% | XX.XX% |
+| Dataset Features       | **XX.XX%** |    XX.XX% | XX.XX% |
+
+![Model Comparison](results/decision_tree/model_comparison.png)
+
+### Confusion Matrix
+
+![Confusion Matrices](results/decision_tree/confusion_matrices.png)
+
+The confusion matrices are used to identify activities that are difficult for the classifier to distinguish.
+
+### Effect of Tree Depth
+
+Tree depth is varied from **2 to 8** to study the relationship between model complexity and test performance.
+
+![Accuracy vs Tree Depth](results/decision_tree/accuracy_vs_depth.png)
+
+**Best-performing configuration:**
+
+| Feature Representation | Best Depth | Accuracy |
+| ---------------------- | ---------: | -------: |
+| Raw Accelerometer      |          X |   XX.XX% |
+| TSFEL Features         |          X |   XX.XX% |
+| Dataset Features       |          X |   XX.XX% |
+
+---
+
+# 3. Real-World Validation
+
+To evaluate model generalization beyond the benchmark dataset, smartphone accelerometer data was independently collected for the same six activities.
+
+The collected data was processed using the same preprocessing and feature-extraction pipeline before being passed to the trained model.
+
+### Real-World Results
+
+| Metric    | UCI-HAR Test Set | Self-Collected Data |
+| --------- | ---------------: | ------------------: |
+| Accuracy  |           XX.XX% |              XX.XX% |
+| Precision |           XX.XX% |              XX.XX% |
+| Recall    |           XX.XX% |              XX.XX% |
+
+![Real World Confusion Matrix](results/real_world/real_world_confusion_matrix.png)
+
+### Generalization
+
+![Benchmark vs Real World](results/real_world/benchmark_vs_real_world.png)
+
+The difference between benchmark and self-collected performance highlights the effect of real-world sensor variation and provides a practical evaluation of model generalization.
+
+---
+
+## Key Results
+
+* **Best feature representation:** XX
+* **Best Decision Tree depth:** XX
+* **Best UCI-HAR accuracy:** XX.XX%
+* **Real-world accuracy:** XX.XX%
+* **Most frequently confused activities:** XX and XX
+
+---
+
+## Repository Structure
+
+```text
+├── 01_eda.ipynb
+├── 02_decision_tree.ipynb
+├── 03_real_world_evaluation.ipynb
+├── data/
+└── results/
+```
+
+Each notebook corresponds to one stage of the project and contains the analysis, experiments and results.
+
+---
+
+## Technologies
+
+**Python · NumPy · Pandas · Matplotlib · Scikit-learn · TSFEL · Jupyter**
+
+---
+
+## Conclusion
+
+This project demonstrates an end-to-end approach to **sensor-based activity recognition**, from raw accelerometer data and feature engineering to model selection, error analysis and real-world validation.
+
+The experiments show how the choice of feature representation and model complexity influences classification performance, while the real-world evaluation provides insight into how a model trained on a benchmark dataset performs on independently collected sensor data.
