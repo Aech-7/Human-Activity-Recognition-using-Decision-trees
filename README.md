@@ -1,117 +1,73 @@
 # Human Activity Recognition using Decision Trees
 
-**End-to-end machine learning pipeline for classifying human activities from smartphone accelerometer data.**
+A machine learning project for **human activity recognition from smartphone accelerometer data**, covering feature analysis, Decision Tree classification, model evaluation, and real-world validation.
 
 [![Python](https://img.shields.io/badge/Python-3.x-blue)]()
 [![Scikit-learn](https://img.shields.io/badge/Scikit--learn-ML-orange)]()
 [![TSFEL](https://img.shields.io/badge/TSFEL-Feature%20Engineering-green)]()
+    
+## Overview
 
-## Project Overview
-
-This project develops a **Human Activity Recognition (HAR)** system using smartphone accelerometer data to classify six activities:
+The goal is to classify six human activities from smartphone sensor data:
 
 **Walking · Walking Upstairs · Walking Downstairs · Sitting · Standing · Laying**
 
-The project focuses on understanding how **feature representation affects model performance**, comparing raw sensor signals, TSFEL-extracted features, and features provided with the UCI-HAR dataset.
-
-The complete pipeline includes:
+The project follows an end-to-end ML workflow:
 
 ```text
-Sensor Data
-    ↓
-Preprocessing
-    ↓
-Feature Engineering
-    ↓
-PCA Visualization
-    ↓
+Accelerometer Data
+        ↓
+Data Processing
+        ↓
+Feature Extraction
+        ↓
+PCA Analysis
+        ↓
 Decision Tree Classification
-    ↓
+        ↓
 Model Evaluation
-    ↓
-Error Analysis
-    ↓
+        ↓
 Real-World Validation
 ```
 
----
-
-## Technical Highlights
-
-* Exploratory analysis of multivariate accelerometer time-series data
-* Feature engineering using **TSFEL**
-* Dimensionality reduction using **PCA**
-* Decision Tree classification using **Scikit-learn**
-* Model comparison across multiple feature representations
-* Hyperparameter analysis through varying tree depth
-* Accuracy, precision, recall and confusion-matrix based evaluation
-* Error analysis of misclassified activities
-* Evaluation on **self-collected smartphone sensor data**
+The project also includes a **from-scratch Decision Tree implementation** for classification and regression.
 
 ---
 
-## Dataset
+## 1. Exploratory Data Analysis
 
-The primary dataset is the **UCI Human Activity Recognition Using Smartphones Dataset**.
+The accelerometer signals are analyzed to understand how different activities appear in the sensor data.
 
-The dataset contains smartphone sensor measurements collected from participants performing six activities. Accelerometer signals are sampled at **50 Hz**.
+The analysis includes:
 
-| Activity           | Type    |
-| ------------------ | ------- |
-| Walking            | Dynamic |
-| Walking Upstairs   | Dynamic |
-| Walking Downstairs | Dynamic |
-| Sitting            | Static  |
-| Standing           | Static  |
-| Laying             | Static  |
+* Visualization of representative activity signals
+* Comparison of static and dynamic activities
+* Analysis of acceleration magnitude
+* PCA on different feature representations
+* Comparison of raw, TSFEL and dataset-provided features
 
----
+![Activity Waveforms](HAR/results/activity_waveforms.png)
 
-# 1. Exploratory Data Analysis
-
-The first stage investigates the structure and characteristics of the accelerometer signals.
-
-### Activity Waveforms
-
-Representative signals from all six activities are visualized to examine differences in their temporal patterns.
-
-![Activity Waveforms](results/eda/activity_waveforms.png)
-
-### Static vs Dynamic Activities
-
-Acceleration magnitude is analyzed using:
-
-```text
-accx² + accy² + accz²
-```
-
-to investigate whether static and dynamic activities exhibit distinguishable sensor patterns.
-
-![Acceleration Magnitude](results/eda/acceleration_magnitude.png)
-
-### PCA Visualization
-
-PCA is used to project three feature representations into two dimensions:
-
-* Total acceleration
-* TSFEL features
-* Dataset-provided features
-
-![PCA Comparison](results/pca/pca_comparison.png)
-
-This provides a visual comparison of class separability before classification.
+![PCA Comparison](HAR/results/pca_comparison.png)
 
 ---
 
-# 2. Decision Tree Classification
+## 2. Decision Tree Classification
 
-Decision Trees are trained using three different representations of the sensor data:
+Decision Tree models are trained using three feature representations:
 
-| Model   | Input Representation     |
-| ------- | ------------------------ |
-| Model 1 | Raw accelerometer data   |
-| Model 2 | TSFEL features           |
-| Model 3 | UCI-HAR dataset features |
+| Feature Representation | Description                                  |
+| ---------------------- | -------------------------------------------- |
+| Raw Accelerometer      | Direct sensor measurements                   |
+| TSFEL Features         | Automatically extracted time-series features |
+| UCI-HAR Features       | Features provided with the dataset           |
+
+The models are compared using:
+
+* Accuracy
+* Precision
+* Recall
+* Confusion matrices
 
 ### Model Performance
 
@@ -119,88 +75,92 @@ Decision Trees are trained using three different representations of the sensor d
 | ---------------------- | ---------: | --------: | -----: |
 | Raw Accelerometer      | **XX.XX%** |    XX.XX% | XX.XX% |
 | TSFEL Features         | **XX.XX%** |    XX.XX% | XX.XX% |
-| Dataset Features       | **XX.XX%** |    XX.XX% | XX.XX% |
+| UCI-HAR Features       | **XX.XX%** |    XX.XX% | XX.XX% |
 
-![Model Comparison](results/decision_tree/model_comparison.png)
+![Model Comparison](HAR/results/model_comparison.png)
 
-### Confusion Matrix
+### Model Complexity
 
-![Confusion Matrices](results/decision_tree/confusion_matrices.png)
+Decision Tree depth is varied from **2 to 8** to study the effect of model complexity on classification performance.
 
-The confusion matrices are used to identify activities that are difficult for the classifier to distinguish.
+![Accuracy vs Tree Depth](HAR/results/accuracy_vs_depth.png)
 
-### Effect of Tree Depth
+Confusion matrices are also analyzed to identify activities that are frequently misclassified.
 
-Tree depth is varied from **2 to 8** to study the relationship between model complexity and test performance.
-
-![Accuracy vs Tree Depth](results/decision_tree/accuracy_vs_depth.png)
-
-**Best-performing configuration:**
-
-| Feature Representation | Best Depth | Accuracy |
-| ---------------------- | ---------: | -------: |
-| Raw Accelerometer      |          X |   XX.XX% |
-| TSFEL Features         |          X |   XX.XX% |
-| Dataset Features       |          X |   XX.XX% |
+![Confusion Matrices](HAR/results/confusion_matrices.png)
 
 ---
 
-# 3. Real-World Validation
+## 3. Real-World Evaluation
 
-To evaluate model generalization beyond the benchmark dataset, smartphone accelerometer data was independently collected for the same six activities.
+To evaluate generalization beyond the benchmark dataset, smartphone accelerometer data was independently collected for the same six activities.
 
-The collected data was processed using the same preprocessing and feature-extraction pipeline before being passed to the trained model.
+The collected data is processed using the same pipeline and evaluated using the trained model.
 
-### Real-World Results
+| Dataset             |   Accuracy | Precision | Recall |
+| ------------------- | ---------: | --------: | -----: |
+| UCI-HAR Test Set    | **XX.XX%** |    XX.XX% | XX.XX% |
+| Self-Collected Data | **XX.XX%** |    XX.XX% | XX.XX% |
 
-| Metric    | UCI-HAR Test Set | Self-Collected Data |
-| --------- | ---------------: | ------------------: |
-| Accuracy  |           XX.XX% |              XX.XX% |
-| Precision |           XX.XX% |              XX.XX% |
-| Recall    |           XX.XX% |              XX.XX% |
+![Real-World Confusion Matrix](HAR/results/real_world_confusion_matrix.png)
 
-![Real World Confusion Matrix](results/real_world/real_world_confusion_matrix.png)
+This experiment evaluates how well a model trained on a standard benchmark dataset generalizes to independently collected sensor data.
 
-### Generalization
+---
 
-![Benchmark vs Real World](results/real_world/benchmark_vs_real_world.png)
+## From-Scratch Decision Tree
 
-The difference between benchmark and self-collected performance highlights the effect of real-world sensor variation and provides a practical evaluation of model generalization.
+A Decision Tree was also implemented from scratch in Python to understand the underlying classification and regression process.
+
+The implementation is contained in:
+
+```text
+tree/
+├── base.py
+├── utils.py
+└── __init__.py
+```
+
+The implementation is evaluated through additional experiments in the repository.
+
+---
+
+## Key Files
+
+The main project workflow is contained in three notebooks:
+
+* **`HAR/01_eda.ipynb`** — explores the accelerometer data, feature representations and PCA.
+* **`HAR/02_har_decision_tree.ipynb`** — trains, compares and evaluates the Decision Tree models.
+* **`HAR/03_real_world_evaluation.ipynb`** — tests the trained model on independently collected smartphone data.
+
+The **`tree/`** directory contains the from-scratch Decision Tree implementation used for additional experiments.
 
 ---
 
 ## Key Results
 
-* **Best feature representation:** XX
-* **Best Decision Tree depth:** XX
-* **Best UCI-HAR accuracy:** XX.XX%
-* **Real-world accuracy:** XX.XX%
-* **Most frequently confused activities:** XX and XX
-
----
-
-## Repository Structure
-
-```text
-├── 01_eda.ipynb
-├── 02_decision_tree.ipynb
-├── 03_real_world_evaluation.ipynb
-├── data/
-└── results/
-```
-
-Each notebook corresponds to one stage of the project and contains the analysis, experiments and results.
+| Experiment                  | Result      |
+| --------------------------- | ----------- |
+| Best feature representation | **XX**      |
+| Best tree depth             | **XX**      |
+| UCI-HAR accuracy            | **XX.XX%**  |
+| Real-world accuracy         | **XX.XX%**  |
+| Most confused activities    | **XX / XX** |
 
 ---
 
 ## Technologies
 
-**Python · NumPy · Pandas · Matplotlib · Scikit-learn · TSFEL · Jupyter**
+**Python · NumPy · Pandas · Scikit-learn · Matplotlib · TSFEL · Jupyter**
 
 ---
 
-## Conclusion
+## Key Takeaways
 
-This project demonstrates an end-to-end approach to **sensor-based activity recognition**, from raw accelerometer data and feature engineering to model selection, error analysis and real-world validation.
-
+* Different feature representations have a measurable impact on activity classification.
+* PCA provides a useful view of activity separability.
+* Tree depth affects the balance between model complexity and generalization.
+* Confusion matrices help identify difficult activity pairs.
+* Evaluation on independently collected data provides a practical test of model generalization.
+* The from-scratch implementation provides a deeper understanding of Decision Tree algorithms.
 The experiments show how the choice of feature representation and model complexity influences classification performance, while the real-world evaluation provides insight into how a model trained on a benchmark dataset performs on independently collected sensor data.
